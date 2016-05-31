@@ -7,18 +7,35 @@
 
 #include <iostream>
 
+#include "Point.h"
+
 class Map {
 public:
-    Map(int size);
+    Map(int size, int scale);
     ~Map();
+
+    void init();
+    void createHeightMap();
+    void makeHeightScale();
 
     void printHeightToConsole();
     void printHeightToConsole(int xStart, int yStart, int xEnd, int yEnd);
-    void printHeightToConsoleScale(int scale);
+    void printHeightToConsoleScale();
 protected:
-    int size;
-    int **height;
+    int size, scale;
+    int **height, **heightScale;
 private:
+    class Elevation{
+    public:
+        Elevation(int size, int length);
+        void init(Map *map);
+        void build(Map *map);
+    protected:
+    private:
+        int size, length;
+        Point *points;
+
+    };
 };
 
 
