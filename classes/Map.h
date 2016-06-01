@@ -17,20 +17,24 @@ public:
     void init();
     void createHeightMap();
     void makeHeightScale();
+    void makeHeightScale10();
 
     void printHeightToConsole();
+    void printHeightToConsole(int x, int y, int r);
     void printHeightToConsole(int xStart, int yStart, int xEnd, int yEnd);
     void printHeightToConsoleScale();
 protected:
     int size, scale;
-    int **height, **heightScale;
+    int **height, **heightScale, **heightScale10;
 private:
+    void printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd);
+
     class Elevation{
     public:
         Elevation(int size, int length);
         ~Elevation();
 
-        void init(Map *map);
+        void init(Map *map, bool log);
         void build(Map *map);
     protected:
     private:
