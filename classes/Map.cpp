@@ -36,6 +36,11 @@ Map::~Map() {
         delete[] height[i];
     }
     delete height;
+
+    for (int i = 0; i < size / scale; ++i) {
+        delete[] heightScale[i];
+    }
+    delete heightScale;
 }
 //----------//----------//----------//
 void Map::init(){
@@ -48,6 +53,7 @@ void Map::createHeightMap() {
     Elevation *elevation = new Elevation(500, 5);
     elevation->init(this);
     elevation->build(this);
+    delete elevation;
     //----------//
 
     std::cout << "Map: Made height-map\n";

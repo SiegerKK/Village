@@ -28,6 +28,8 @@ private:
     class Elevation{
     public:
         Elevation(int size, int length);
+        ~Elevation();
+
         void init(Map *map);
         void build(Map *map);
     protected:

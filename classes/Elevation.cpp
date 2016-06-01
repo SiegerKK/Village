@@ -11,6 +11,10 @@ Map::Elevation::Elevation(int size, int length) {
     this->length = length;
     points = new Point[size];
 }
+Map::Elevation::~Elevation() {
+    delete[] points;
+}
+
 void Map::Elevation::init(Map *map) {
     points[0].x = rand() % map->size;
     points[0].y = rand() % map->size;

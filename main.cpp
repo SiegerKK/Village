@@ -13,5 +13,7 @@ int main() {
 
     map->printHeightToConsoleScale();
     map->printHeightToConsole(0, 0, 40, 40);
+
+    delete map;
     return 0;
 }
