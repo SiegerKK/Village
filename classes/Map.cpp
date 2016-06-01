@@ -65,8 +65,8 @@ void Map::init(){
 void Map::createHeightMap() {
     //----------//
     Elevation *elevation;
-    for (int i = 0; i < (rand() % 5) + 5; ++i) {
-        elevation = new Elevation(100, 5);
+    for (int i = 0; i < (rand() % 10) + 10; ++i) {
+        elevation = new Elevation((rand() % 500) + 100, rand() % 10 + 1);
         elevation->init(this, true);
         elevation->build(this);
         delete elevation;
@@ -89,8 +89,8 @@ void Map::makeHeightScale(){
     }
 
 
-    for (int i = 0; i < size / scale - 1; ++i) {
-        for (int j = 0; j < size / scale - 1; ++j) {
+    for (int i = 0; i < size / scale; ++i) {
+        for (int j = 0; j < size / scale; ++j) {
             double averageValue = 0;
             for (int k = i * scale; k < (i + 1) * scale; ++k) {
                 for (int l = j * scale; l < (j + 1) * scale; ++l) {
@@ -142,6 +142,14 @@ void Map::printHeightToConsoleScale(){
 }
 //----------//----------//----------//
 void Map::printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd) {
+    if(xEnd - xStart >= size){
+        xStart = 0;
+        xEnd = size - 1;
+    }
+    if(yEnd - yStart >= size){
+        yStart = 0;
+        yEnd = size - 1;
+    }
     if(xStart < 0){
         xEnd -= xStart;
         xStart = 0;
@@ -159,6 +167,8 @@ void Map::printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd) {
         yEnd -= size - 1;
     }
 
+    //std::cout << xStart << "->" << xEnd << " | " << yStart << "->" << yEnd << "\n";
+
     for (int i = yStart; i <= yEnd; ++i) {
         for (int j = xStart; j <= xEnd; ++j) {
             if(array[i][j] < 10)
@@ -175,4 +185,23 @@ void Map::printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd) {
         std::cout << "\n";
     }
 
+}
+
+//----------//----------//----------//
+void Map::writeHeightToPGM(std::string fileName){
+    std::ofstream file;
+    file.open(fileName.c_str());
+
+    file << "P2\n";
+    file << size << " " << size << "\n";
+    file << 20 << "\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            file << 20 - height[i][j] << " ";
+        }
+        file << "\n";
+    }
+
+    std::cout << "Map: File " << fileName << " was written\n";
+    file.close();
 }

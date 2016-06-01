@@ -5,6 +5,7 @@
 #ifndef VILLAGE_MAP_H
 #define VILLAGE_MAP_H
 
+#include <fstream>
 #include <iostream>
 
 #include "Point.h"
@@ -23,6 +24,8 @@ public:
     void printHeightToConsole(int x, int y, int r);
     void printHeightToConsole(int xStart, int yStart, int xEnd, int yEnd);
     void printHeightToConsoleScale();
+
+    void writeHeightToPGM(std::string fileName);
 protected:
     int size, scale;
     int **height, **heightScale, **heightScale10;
