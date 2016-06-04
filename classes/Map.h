@@ -5,6 +5,7 @@
 #ifndef VILLAGE_MAP_H
 #define VILLAGE_MAP_H
 
+#include <ctime>
 #include <fstream>
 #include <iostream>
 

@@ -6,6 +6,8 @@
 
 //----------//----------//----------//
 Map::Map(int size, int scale) {
+    time_t seconds = time(0);
+
     if(size % scale != 0){
         std::cerr << "ERROR:Map(int size, int scale)\n";
         std::cerr << "--->Wrong scale\n";
@@ -38,6 +40,8 @@ Map::Map(int size, int scale) {
             heightScale[i][j] = 0;
         }
     }
+
+    std::cout << "Map: Creating time " << time(0) - seconds << "s\n";
 }
 Map::~Map() {
     for (int i = 0; i < size; ++i) {
@@ -57,16 +61,24 @@ Map::~Map() {
 }
 //----------//----------//----------//
 void Map::init(){
+    time_t seconds = time(0);
     createHeightMap();
 
     makeHeightScale10();
     makeHeightScale();
+    std::cout << "Map: Initializing time " << time(0) - seconds << "s\n";
 }
 void Map::createHeightMap() {
+
+    //----------//
+    //some code
+    //----------//
+
+
     //----------//
     Elevation *elevation;
     for (int i = 0; i < (rand() % 10) + 10; ++i) {
-        elevation = new Elevation((rand() % 500) + 100, rand() % 10 + 1);
+        elevation = new Elevation((rand() % 100) + 100, rand() % 10 + 5);
         elevation->init(this, true);
         elevation->build(this);
         delete elevation;
@@ -186,7 +198,6 @@ void Map::printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd) {
     }
 
 }
-
 //----------//----------//----------//
 void Map::writeHeightToPGM(std::string fileName){
     std::ofstream file;
@@ -197,7 +208,12 @@ void Map::writeHeightToPGM(std::string fileName){
     file << 20 << "\n";
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            file << 20 - height[i][j] << " ";
+            if(height[i][j] >= 20)
+                file << 0 << " ";
+            else if(height[i][j] <= 0)
+                file << 20 << " ";
+            else
+                file << 20 - height[i][j] << " ";
         }
         file << "\n";
     }
