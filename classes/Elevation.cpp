@@ -18,17 +18,34 @@ Map::Elevation::~Elevation() {
 void Map::Elevation::init(Map *map, bool log) {
     points[0].x = rand() % map->size;
     points[0].y = rand() % map->size;
-    if(log) {
+    /*if(log) {
         std::clog << "Elevation.init(...):\n";
         std::clog << "-->center = {" << points[0].x << ", " << points[0].y << "}\n";
     }
-    /*points[0].x = 5;
-    points[0].y = 5;*/
     for (int i = 1; i < length; ++i) {
         points[i].x = points[i - 1].x + (rand() % (size * 2 + 1) - size);
         points[i].y = points[i - 1].y + (rand() % (size * 2 + 1) - size);
         if(log) {
             std::clog << "-->point  = {" << points[i].x << ", " << points[i].y << "}\n";
+        }
+    }*/
+    points[1].x = points[0].x + (rand() % (size * 2 + 1) - size);
+    points[1].y = points[0].y + (rand() % (size * 2 + 1) - size);
+    /*points[1].x = points[0].x + size;
+    points[1].y = points[0].y + size;*/
+    /*Point testPoint;
+    testPoint.x = points[0].x + 1;
+    testPoint.y = points[0].y + 1;
+    points[1] = generatePointInSector(points[0], testPoint, size, 360);*/
+    if(log) {
+        std::clog << "Elevation.init(...):\n";
+        std::clog << "-->center = {" << points[0].x << ", " << points[0].y << "}\n";
+        std::clog << "-->center = {" << points[1].x << ", " << points[1].y << "}\n";
+    }
+    for (int i = 2; i < length; ++i) {
+        points[i] = generatePointInSector(points[i - 2], points[i - 1], size, 60);
+        if(log) {
+            std::clog << "-->point  = {" << points[i].x << ", " << points[i].y << ", " << Point::angle(points[i - 1], points[i]) << "*}\n";
         }
     }
 }
@@ -46,4 +63,22 @@ void Map::Elevation::build(Map *map) {
             }
         }
     }
+}
+
+Point Map::Elevation::generatePointInSector(Point lastPoint, Point currentPoint, double radius, double angle) {
+    double anglePoints = Point::angle(lastPoint, currentPoint);
+    //std::clog << "anglePoints:" << anglePoints << "\n";
+    double angleNew = (rand() % (int)angle) + anglePoints - (angle / 2);
+    if(angleNew > 360)
+        angleNew -= 360;
+    else if(angleNew < 0)
+        angleNew += 360;
+    //std::clog << "angleNew:" << angleNew << "\n";
+
+    double radiusNew = rand() % (int)(radius / 2) + (radius / 2);
+    Point point;
+    point.x = currentPoint.x + (int)(radiusNew * sin(angleNew / 180 * M_PI) + 0.5);
+    point.y = currentPoint.y + (int)(radiusNew * cos(angleNew / 180 * M_PI) + 0.5);
+
+    return point;
 }

@@ -69,25 +69,13 @@ void Map::init(){
     std::cout << "Map: Initializing time " << time(0) - seconds << "s\n";
 }
 void Map::createHeightMap() {
-
-    //----------//
-    //some code
-    //----------//
-
-
     //----------//
     Elevation *elevation;
-    for (int i = 0; i < (rand() % 10) + 10; ++i) {
-        elevation = new Elevation((rand() % 100) + 100, rand() % 10 + 5);
+    for (int i = 0; i < (rand() % 10) + 1; ++i) {
+        elevation = new Elevation((rand() % 100) + 50, rand() % 5 + 5);
         elevation->init(this, true);
         elevation->build(this);
         delete elevation;
-
-        //----------//
-        /*makeHeightScale();
-        system("clear");
-        printHeightToConsoleScale();*/
-        //----------//
     }
     //----------//
 

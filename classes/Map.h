@@ -42,9 +42,29 @@ private:
         void build(Map *map);
     protected:
     private:
-        int size, length;
+        //size - radius of one elevation
+        int size;
+        //length - count of elevations
+        int length;
+        //points - array of points, which have coordinates of center of elevation;
         Point *points;
 
+        /**
+         *  generatePointInSector(Point lastPoint, Point currentPoint, double radius, double angle)
+         *
+         *
+         *  Make new point in one line with lastPoint and currentPoint(can be changed by angle) in same radius
+         *
+         *
+         *  Variables:
+         *
+         *  lastPoint, currentPoint - points for calculing angle
+         *
+         *  radius - distance on which new point will be created
+         *
+         *  angle - angle of sector on which new point will be created(in degrees)
+         */
+        Point generatePointInSector(Point lastPoint, Point currentPoint, double radius, double angle);
     };
 };
 
