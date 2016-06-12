@@ -63,7 +63,9 @@ Map::~Map() {
 void Map::init(){
     time_t seconds = time(0);
     createHeightMap();
-
+    //----------//
+    //some another code
+    //----------//
     makeHeightScale10();
     makeHeightScale();
     std::cout << "Map: Initializing time " << time(0) - seconds << "s\n";
@@ -71,7 +73,7 @@ void Map::init(){
 void Map::createHeightMap() {
     //----------//
     Elevation *elevation;
-    for (int i = 0; i < (rand() % 10) + 1; ++i) {
+    for (int i = 0; i < (rand() % 10) + 10; ++i) {
         elevation = new Elevation((rand() % 100) + 50, rand() % 5 + 5);
         elevation->init(this, true);
         elevation->build(this);
@@ -202,6 +204,32 @@ void Map::writeHeightToPGM(std::string fileName){
                 file << 20 << " ";
             else
                 file << 20 - height[i][j] << " ";
+        }
+        file << "\n";
+    }
+
+    std::cout << "Map: File " << fileName << " was written\n";
+    file.close();
+}
+void Map::writeHeightToPPM(std::string fileName){
+    std::ofstream file;
+    file.open(fileName.c_str());
+
+    file << "P3\n";
+    file << size << " " << size << "\n";
+    file << 20 << "\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            if(height[i][j] > 10)
+                file << 5  << " " << 5 << " " << 5 << " ";
+            else if(height[i][j] > 7)
+                file << 10  << " " << 10 << " " << 10 << " ";
+            else if(height[i][j] > 0)
+                file << 20 << " " << 20 << " " << 20 << " ";
+            else if(height[i][j] <= 0)
+                file << 0 << " " << 0 << " " << 15 << " ";
+            /*else
+                file << 20 - height[i][j] << " " << 20 - height[i][j] << " " << 20 - height[i][j] << " ";*/
         }
         file << "\n";
     }

@@ -27,6 +27,7 @@ public:
     void printHeightToConsoleScale();
 
     void writeHeightToPGM(std::string fileName);
+    void writeHeightToPPM(std::string fileName);
 protected:
     int size, scale;
     int **height, **heightScale, **heightScale10;

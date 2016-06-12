@@ -18,6 +18,7 @@ int main() {
     map->printHeightToConsole(x, y ,r);
     //----------//
     map->writeHeightToPGM("test.pgm");
+    map->writeHeightToPPM("test.ppm");
     delete map;
 
     return 0;

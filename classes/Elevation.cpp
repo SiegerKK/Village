@@ -18,25 +18,8 @@ Map::Elevation::~Elevation() {
 void Map::Elevation::init(Map *map, bool log) {
     points[0].x = rand() % map->size;
     points[0].y = rand() % map->size;
-    /*if(log) {
-        std::clog << "Elevation.init(...):\n";
-        std::clog << "-->center = {" << points[0].x << ", " << points[0].y << "}\n";
-    }
-    for (int i = 1; i < length; ++i) {
-        points[i].x = points[i - 1].x + (rand() % (size * 2 + 1) - size);
-        points[i].y = points[i - 1].y + (rand() % (size * 2 + 1) - size);
-        if(log) {
-            std::clog << "-->point  = {" << points[i].x << ", " << points[i].y << "}\n";
-        }
-    }*/
     points[1].x = points[0].x + (rand() % (size * 2 + 1) - size);
     points[1].y = points[0].y + (rand() % (size * 2 + 1) - size);
-    /*points[1].x = points[0].x + size;
-    points[1].y = points[0].y + size;*/
-    /*Point testPoint;
-    testPoint.x = points[0].x + 1;
-    testPoint.y = points[0].y + 1;
-    points[1] = generatePointInSector(points[0], testPoint, size, 360);*/
     if(log) {
         std::clog << "Elevation.init(...):\n";
         std::clog << "-->center = {" << points[0].x << ", " << points[0].y << "}\n";
@@ -51,6 +34,7 @@ void Map::Elevation::init(Map *map, bool log) {
 }
 void Map::Elevation::build(Map *map) {
     for (int k = 0; k < length; ++k) {
+        int size = rand() % (this->size / 3) + (this->size / 3 * 2);
         for (int i = points[k].y - size; i <= points[k].y + size; ++i) {
             for (int j = points[k].x - size; j <= points[k].x + size; ++j) {
                 if((i >= 0) && (i < map->size) && (j >= 0) && (j < map->size)) {
