@@ -24,7 +24,6 @@ Map::Map(int size, int scale) {
             height[i][j] = 0;
         }
     }
-
     heightScale10 = new int*[size / 10];
     for (int i = 0; i < size / 10; ++i) {
         heightScale10[i] = new int[size / 10];
@@ -32,12 +31,18 @@ Map::Map(int size, int scale) {
             heightScale10[i][j] = 0;
         }
     }
-
     heightScale = new int*[size / scale];
     for (int i = 0; i < size / scale; ++i) {
         heightScale[i] = new int[size / scale];
         for (int j = 0; j < size / scale; ++j) {
             heightScale[i][j] = 0;
+        }
+    }
+    temperature = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        temperature[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            temperature[i][j] = 0;
         }
     }
 
@@ -63,6 +68,7 @@ Map::~Map() {
 void Map::init(){
     time_t seconds = time(0);
     createHeightMap();
+    createTemperatureMap();
     //----------//
     //some another code
     //----------//
@@ -82,6 +88,23 @@ void Map::createHeightMap() {
     //----------//
 
     std::cout << "Map: Made height-map\n";
+}
+void Map::createTemperatureMap() {
+    int tempCoef = (int)((size / 11.0) + 0.5);
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            temperature[i][j] = 5 - (i / tempCoef) - (height[i][j] / 2);
+            //----------//
+            //It must not depends on height, but watter(ocean, seas, rivers)
+            if(height[i][j] == 0){
+                if(temperature[i][j] > 0)
+                    temperature[i][j]--;
+                else if(temperature[i][j] < 0)
+                    temperature[i][j]++;
+            }
+            //----------//
+        }
+    }
 }
 void Map::makeHeightScale(){
     if(size % scale != 0){
@@ -230,6 +253,32 @@ void Map::writeHeightToPPM(std::string fileName){
                 file << 0 << " " << 0 << " " << 15 << " ";
             /*else
                 file << 20 - height[i][j] << " " << 20 - height[i][j] << " " << 20 - height[i][j] << " ";*/
+        }
+        file << "\n";
+    }
+
+    std::cout << "Map: File " << fileName << " was written\n";
+    file.close();
+}
+void Map::writeTemperatureToPPM(std::string fileName) {
+    std::ofstream file;
+    file.open(fileName.c_str());
+
+    file << "P3\n";
+    file << size << " " << size << "\n";
+    file << 20 << "\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            if(temperature[i][j] >= 4)
+                file << 15  << " " << 0 << " " << 0 << " ";
+            else if(temperature[i][j] >= 2)
+                file << 15  << " " << 10 << " " << 0 << " ";
+            else if(temperature[i][j] >= -1)
+                file << 0 << " " << 15 << " " << 0 << " ";
+            else if(temperature[i][j] >= -3)
+                file << 0 << " " << 0 << " " << 15 << " ";
+            else
+                file << 0 << " " << 10 << " " << 10 << " ";
         }
         file << "\n";
     }

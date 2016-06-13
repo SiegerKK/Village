@@ -17,8 +17,9 @@ int main() {
     int x = 0, y = 0, r = 20;
     map->printHeightToConsole(x, y ,r);
     //----------//
-    map->writeHeightToPGM("test.pgm");
-    map->writeHeightToPPM("test.ppm");
+    map->writeHeightToPGM("testHeight.pgm");
+    map->writeHeightToPPM("testHeight.ppm");
+    map->writeTemperatureToPPM("testTemperature.ppm");
     delete map;
 
     return 0;

@@ -18,6 +18,8 @@ public:
 
     void init();
     void createHeightMap();
+    void createTemperatureMap();
+
     void makeHeightScale();
     void makeHeightScale10();
 
@@ -28,9 +30,13 @@ public:
 
     void writeHeightToPGM(std::string fileName);
     void writeHeightToPPM(std::string fileName);
+    void writeTemperatureToPPM(std::string fileName);
 protected:
-    int size, scale;
+    //size - size of map(width and height)
+    int size;
+    int scale;
     int **height, **heightScale, **heightScale10;
+    int **temperature;
 private:
     void printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd);
 
