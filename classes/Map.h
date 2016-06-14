@@ -19,6 +19,7 @@ public:
     void init();
     void createHeightMap();
     void createTemperatureMap();
+    void createHumidityMap();
 
     void makeHeightScale();
     void makeHeightScale10();
@@ -31,12 +32,22 @@ public:
     void writeHeightToPGM(std::string fileName);
     void writeHeightToPPM(std::string fileName);
     void writeTemperatureToPPM(std::string fileName);
+    void writeHumidityToPPM(std::string fileName);
 protected:
-    //size - size of map(width and height)
+    //int size - size of map(width and height)
     int size;
+    //int scale - variable for scaling map;
     int scale;
-    int **height, **heightScale, **heightScale10;
+    //int height[][] - array with heights all of tiles
+    int **height;
+    //int heightScale[][] - scaled height[][] with user scaling
+    int **heightScale;
+    //int heightScale10[][] - scaled height[][] with scaling 10
+    int **heightScale10;
+    //int tmperature[][] - array with temperatures all of tiles
     int **temperature;
+    //int humidity[][] - array with humidity all of tiles(влажность)
+    int **humidity;
 private:
     void printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd);
 

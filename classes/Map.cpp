@@ -45,6 +45,13 @@ Map::Map(int size, int scale) {
             temperature[i][j] = 0;
         }
     }
+    humidity = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        humidity[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            humidity[i][j] = 0;
+        }
+    }
 
     std::cout << "Map: Creating time " << time(0) - seconds << "s\n";
 }
@@ -63,12 +70,26 @@ Map::~Map() {
         delete[] heightScale[i];
     }
     delete heightScale;
+
+    for (int i = 0; i < size / scale; ++i) {
+        delete[] temperature[i];
+    }
+    delete temperature;
+
+    for (int i = 0; i < size / scale; ++i) {
+        delete[] humidity[i];
+    }
+    delete humidity;
 }
 //----------//----------//----------//
-void Map::init(){
+void Map::init() {
     time_t seconds = time(0);
     createHeightMap();
+    std::cout << "Map: Height map created\n";
     createTemperatureMap();
+    std::cout << "Map: Temperature map created\n";
+    createHumidityMap();
+    std::cout << "Map: Humidity map created\n";
     //----------//
     //some another code
     //----------//
@@ -106,6 +127,35 @@ void Map::createTemperatureMap() {
         }
     }
 }
+void Map::createHumidityMap(){
+    int radius = 20;
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            //----------//
+            /*double humidityCoef = 0.0;
+            int amount = 0, amountWatter = 0;
+            for (int k = i - radius; k < i + radius; ++k) {
+                for (int l = j - radius; l < j + radius; ++l) {
+                    if((k >= 0) && (k < size) && (l >= 0) && (l < size)){
+                        //----------//
+                        //It must not depends on height, but watter(ocean, seas, rivers)
+                        if(height[k][l] == 0){
+                            amountWatter++;
+                        }
+                        //----------//
+                        amount++;
+                    }
+                }
+            }
+            humidityCoef = ((double)amountWatter) / ((double)amount) * 10;
+            humidity[i][j] = (int)(humidityCoef + 0.49) - (height[i][j] / 4);
+            if(humidity[i][j] < 0)
+                humidity[i][j] = 0;*/
+            //----------//
+        }
+    }
+}
+
 void Map::makeHeightScale(){
     if(size % scale != 0){
         std::cerr << "ERROR:makeHeightScale()\n";
@@ -234,6 +284,7 @@ void Map::writeHeightToPGM(std::string fileName){
     std::cout << "Map: File " << fileName << " was written\n";
     file.close();
 }
+
 void Map::writeHeightToPPM(std::string fileName){
     std::ofstream file;
     file.open(fileName.c_str());
@@ -269,16 +320,73 @@ void Map::writeTemperatureToPPM(std::string fileName) {
     file << 20 << "\n";
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
+            //----------//
+            if(height[i][j] == 0)
+                file << 0  << " " << 0 << " " << 0 << " ";
+            else
+            //----------//
             if(temperature[i][j] >= 4)
                 file << 15  << " " << 0 << " " << 0 << " ";
             else if(temperature[i][j] >= 2)
-                file << 15  << " " << 10 << " " << 0 << " ";
+                file << 15  << " " << 15 << " " << 0 << " ";
             else if(temperature[i][j] >= -1)
                 file << 0 << " " << 15 << " " << 0 << " ";
             else if(temperature[i][j] >= -3)
                 file << 0 << " " << 0 << " " << 15 << " ";
             else
-                file << 0 << " " << 10 << " " << 10 << " ";
+                file << 0 << " " << 15 << " " << 15 << " ";
+        }
+        file << "\n";
+    }
+
+    std::cout << "Map: File " << fileName << " was written\n";
+    file.close();
+}
+void Map::writeHumidityToPPM(std::string fileName) {
+    std::ofstream file;
+    file.open(fileName.c_str());
+
+    file << "P3\n";
+    file << size << " " << size << "\n";
+    file << 20 << "\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            //std::cout << humidity[i][j] << "\n";
+            switch (humidity[i][j]){
+                case 10:
+                    file << 0 << " " << 0 << " " << 20 << " ";
+                    break;
+                case 9:
+                    file << 2 << " " << 0 << " " << 18 << " ";
+                    break;
+                case 8:
+                    file << 4 << " " << 0 << " " << 16 << " ";
+                    break;
+                case 7:
+                    file << 6 << " " << 0 << " " << 14 << " ";
+                    break;
+                case 6:
+                    file << 8 << " " << 0 << " " << 12 << " ";
+                    break;
+                case 5:
+                    file << 10 << " " << 0 << " " << 10 << " ";
+                    break;
+                case 4:
+                    file << 12 << " " << 0 << " " << 8 << " ";
+                    break;
+                case 3:
+                    file << 14 << " " << 0 << " " << 6 << " ";
+                    break;
+                case 2:
+                    file << 16 << " " << 0 << " " << 4 << " ";
+                    break;
+                case 1:
+                    file << 18 << " " << 0 << " " << 2 << " ";
+                    break;
+                case 0:
+                    file << 20 << " " << 0 << " " << 0 << " ";
+                    break;
+            }
         }
         file << "\n";
     }

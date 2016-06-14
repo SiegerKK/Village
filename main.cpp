@@ -20,6 +20,7 @@ int main() {
     map->writeHeightToPGM("testHeight.pgm");
     map->writeHeightToPPM("testHeight.ppm");
     map->writeTemperatureToPPM("testTemperature.ppm");
+    map->writeHumidityToPPM("testHumidity.ppm");
     delete map;
 
     return 0;
