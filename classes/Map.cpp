@@ -111,18 +111,34 @@ void Map::createHeightMap() {
     std::cout << "Map: Made height-map\n";
 }
 void Map::createTemperatureMap() {
-    int tempCoef = (int)((size / 11.0) + 0.5);
-    for (int i = 0; i < size; ++i) {
+    //It divides map on 22 temperature regions(latitudes)
+    int latitudesAmount = 2 * 10 + 1;
+    int latitudeSize = (int)((size / latitudesAmount) + 0.5);
+    for (int i = 0; i < size / 2; ++i) {
         for (int j = 0; j < size; ++j) {
-            temperature[i][j] = 5 - (i / tempCoef) - (height[i][j] / 2);
+            temperature[i][j] = ((i / latitudeSize) - (latitudesAmount - 1) / 4) - (height[i][j] / 2);
             //----------//
             //It must not depends on height, but watter(ocean, seas, rivers)
-            if(height[i][j] == 0){
+            /*if(height[i][j] == 0){
                 if(temperature[i][j] > 0)
                     temperature[i][j]--;
                 else if(temperature[i][j] < 0)
                     temperature[i][j]++;
-            }
+            }*/
+            //----------//
+        }
+    }
+    for (int i = size / 2; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            temperature[i][j] = ((latitudesAmount - 1) / 4) - ((i - size / 2) / latitudeSize) - (height[i][j] / 2);
+            //----------//
+            //It must not depends on height, but watter(ocean, seas, rivers)
+            /*if(height[i][j] == 0){
+                if(temperature[i][j] > 0)
+                    temperature[i][j]--;
+                else if(temperature[i][j] < 0)
+                    temperature[i][j]++;
+            }*/
             //----------//
         }
     }
