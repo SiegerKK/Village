@@ -5,7 +5,7 @@
 #include "Map.h"
 
 //----------//----------//----------//
-Map::Map(int size, int scale) {
+Map::Map(int size, int scale, double relief) {
     time_t seconds = time(0);
 
     if(size % scale != 0){
@@ -16,6 +16,8 @@ Map::Map(int size, int scale) {
 
     this->size = size;
     this->scale = scale;
+    //latitudesAmount= 21;
+    this->relief = relief;
 
     height = new int*[size];
     for (int i = 0; i < size; ++i) {
@@ -93,26 +95,28 @@ void Map::init() {
     //----------//
     //some another code
     //----------//
-    makeHeightScale10();
+    /*makeHeightScale10();
+    std::cout << "Map: map scaling 10 created\n";*/
     makeHeightScale();
+    std::cout << "Map: map user's scaling created\n";
     std::cout << "Map: Initializing time " << time(0) - seconds << "s\n";
 }
 void Map::createHeightMap() {
     //----------//
-    Elevation *elevation;
+    /*Elevation *elevation;
     for (int i = 0; i < (rand() % 10) + 10; ++i) {
         elevation = new Elevation((rand() % 100) + 50, rand() % 5 + 5);
         elevation->init(this, true);
         elevation->build(this);
         delete elevation;
-    }
+    }*/
+    //----------//
+    dimondSquareGeneration();
     //----------//
 
     std::cout << "Map: Made height-map\n";
 }
 void Map::createTemperatureMap() {
-    //It divides map on 22 temperature regions(latitudes)
-    int latitudesAmount = 2 * 10 + 1;
     int latitudeSize = (int)((size / latitudesAmount) + 0.5);
     for (int i = 0; i < size / 2; ++i) {
         for (int j = 0; j < size; ++j) {
@@ -276,6 +280,151 @@ void Map::printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd) {
         std::cout << "\n";
     }
 
+}
+
+void Map::dimondSquareGeneration() {
+    /*height[0][0] = rand() % 21;
+    height[0][size - 1] = rand() % 21;
+    height[size - 1][0] = rand() % 21;
+    height[size - 1][size - 1] = rand() % 21;*/
+
+    height[0][0] = 0;
+    height[0][size - 1] = 0;
+    height[size - 1][0] = 0;
+    height[size - 1][size - 1] = 0;
+
+    //dimondSquareDivide(0, 0, size - 1, size - 1);
+    int side = size - 1;
+    std::queue <Point> pointsForDimond;
+    while(side >= 2){
+        //std::clog << "LOG: side = " << side << "\n";
+        for (int i = 0; i < size / side - 1; i++) {
+            for (int j = 0; j < size / side - 1; j++) {
+                dimondSquareGenerationSquare(j * side, i * side, (j + 1) * side, (i + 1) * side, pointsForDimond);
+                //std::clog << "LOG: center point = {" << (j * side + (j + 1) * side) / 2 << "|" << (i * side + (i + 1) * side) / 2 << "}, side = " << side << "\n";
+            }
+        }
+        std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
+        int x = 0, y = 0, r = 16;
+        std::cout << "side = " << side << " | amount of iter = " << size / side << "\n";
+        printHeightToConsole(x, y ,r);
+        std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
+        /*for (int i = 0; i < pointsForDimond.size(); ++i) {
+            Point point = pointsForDimond.front();
+            pointsForDimond.pop();
+            dimondSquareGenerationDimond(point.x, point.y, side);
+        }*/
+        for (int i = 0; i < size / (side / 2) - 1; i++) {
+            if(i % 2 == 0){
+                for (int j = 0; j < size / side - 2; j++) {
+                    dimondSquareGenerationDimond(i * (side / 2), side / 2 + j * side, side);
+                }
+            } else if(i % 2 == 1){
+                for (int j = 0; j < size / side - 1; j++) {
+                    dimondSquareGenerationDimond(i * (side / 2), j * side, side);
+                }
+            }
+        }
+
+        std::cout << "side = " << side << "\n";
+        printHeightToConsole(x, y ,r);
+        std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
+
+        side /= 2;
+    }
+}
+void Map::dimondSquareDivide(int x1, int y1, int x2, int y2) {
+    if((x2 - x1 <= 1) || (y2 - y1 <= 1)){
+        return;
+    }
+    int xNew = (x1 + x2) / 2;
+    int yNew = (y1 + y2) / 2;
+    int dist = x2 - x1;
+    height[yNew][xNew] = (height[y1][x1] + height[y1][x2] + height[y2][x1] + height[y2][x2]) / 4 + randomInt(-relief * dist, relief * dist);
+    height[yNew][x1] = (height[y1][x1] + height[y2][x1]) / 2 + randomInt(-relief * dist, relief * dist);
+    height[yNew][x2] = (height[y1][x2] + height[y2][x2]) / 2 + randomInt(-relief * dist, relief * dist);
+    height[y1][xNew] = (height[y1][x1] + height[y1][x2]) / 2 + randomInt(-relief * dist, relief * dist);
+    height[y2][xNew] = (height[y2][x1] + height[y2][x2]) / 2 + randomInt(-relief * dist, relief * dist);
+
+    if(height[yNew][xNew] < 0)
+        height[yNew][xNew] = 0;
+    if(height[yNew][xNew] > 20)
+        height[yNew][xNew] = 20;
+
+    if(height[yNew][x1] < 0)
+        height[yNew][x1] = 0;
+    if(height[yNew][x1] > 20)
+        height[yNew][x1] = 20;
+
+    if(height[yNew][x2] < 0)
+        height[yNew][x2] = 0;
+    if(height[yNew][x2] > 20)
+        height[yNew][x2] = 20;
+
+    if(height[y1][xNew] < 0)
+        height[y1][xNew] = 0;
+    if(height[y1][xNew] > 20)
+        height[y1][xNew] = 20;
+
+    if(height[y2][xNew] < 0)
+        height[y2][xNew] = 0;
+    if(height[y2][xNew] > 20)
+        height[y2][xNew] = 20;
+
+    dimondSquareDivide(x1, y1, xNew, yNew);
+    dimondSquareDivide(xNew, y1, x2, yNew);
+    dimondSquareDivide(x1, yNew, xNew, y2);
+    dimondSquareDivide(xNew, yNew, x2, y2);
+
+}
+void Map::dimondSquareGenerationSquare(int x1, int y1, int x2, int y2, std::queue<Point> &pointsForDimond) {
+    int xNew = (x1 + x2) / 2;
+    int yNew = (y1 + y2) / 2;
+    int dist = x2 - x1;
+    height[yNew][xNew] = (height[y1][x1] + height[y1][x2] + height[y2][x1] + height[y2][x2]) / 4 + randomInt(-relief * dist, relief * dist) + 1;
+    //std::clog << "LOG: height[][] = " << height[yNew][xNew] << "\n";
+
+    if(height[yNew][xNew] < -10)
+        height[yNew][xNew] = -10;
+    if(height[yNew][xNew] > 20)
+        height[yNew][xNew] = 20;
+
+    Point point;
+    point.x = x1;
+    point.y = yNew;
+    pointsForDimond.push(point);
+    point.x = xNew;
+    point.y = y1;
+    pointsForDimond.push(point);
+    point.x = x2;
+    point.y = yNew;
+    pointsForDimond.push(point);
+    point.x = xNew;
+    point.y = y2;
+    pointsForDimond.push(point);
+}
+void Map::dimondSquareGenerationDimond(int x, int y, int side) {
+    side /= 2;
+    if((y - side >= 0))
+        height[y][x] += height[y - side][x];
+    if((y + side < size))
+        height[y][x] += height[y + side][x];
+    if((x - side >= 0))
+        height[y][x] += height[y][x - side];
+    if((x + side < size))
+        height[y][x] += height[y][x + side];
+
+    height[y][x] = height[y][x] / 4 + randomInt(-relief * side, relief * side) + 1;
+    //height[y][x] = 1;
+
+    if(height[y][x] < -10)
+        height[y][x] = -10;
+    if(height[y][x] > 20)
+        height[y][x] = 20;
+
+}
+int Map::randomInt(int min, int max) {
+    int result = rand() % (max - min + 1) + min;
 }
 //----------//----------//----------//
 void Map::writeHeightToPGM(std::string fileName){

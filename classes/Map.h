@@ -8,12 +8,14 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
+#include <queue>
 
 #include "Point.h"
 
 class Map {
 public:
-    Map(int size, int scale);
+    Map(int size, int scale, double relief);
     ~Map();
 
     void init();
@@ -38,6 +40,10 @@ protected:
     int size;
     //int scale - variable for scaling map;
     int scale;
+    //int relief - regulates noise in dimond-square generation
+    double relief;
+    //int heightMax - max height of terrain
+    int heightMax;
     //int height[][] - array with heights all of tiles
     int **height;
     //int heightScale[][] - scaled height[][] with user scaling
@@ -48,8 +54,19 @@ protected:
     int **temperature;
     //int humidity[][] - array with humidity all of tiles(влажность)
     int **humidity;
+    //int latitudesAmount - amount of latitudes
+    const int latitudesAmount = 21;
+
 private:
     void printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd);
+
+    void dimondSquareGeneration();
+    void dimondSquareGenerationSquare(int x1, int y1, int x2, int y2, std::queue<Point> &pointsForDimond);
+    void dimondSquareGenerationDimond(int x, int y, int side);
+    //----------//
+    void dimondSquareDivide(int x1, int y1, int x2, int y2);
+    //----------//
+    int randomInt(int min, int max);
 
     class Elevation{
     public:
