@@ -6,10 +6,10 @@
 using namespace std;
 
 int main() {
-    srand(time(NULL));
-    //srand(1);
+    //srand(time(NULL));
+    srand(1);
 
-    Map *map = new Map(1024 + 1, 41, 0.3);
+    Map *map = new Map(1024 + 1, 41, 0.2);
     map->init();
 
     //----------//

@@ -55,17 +55,15 @@ protected:
     //int humidity[][] - array with humidity all of tiles(влажность)
     int **humidity;
     //int latitudesAmount - amount of latitudes
-    const int latitudesAmount = 21;
+    const int latitudesAmount = 22;
 
 private:
     void printHeight(int **array, int xStart, int yStart, int xEnd, int yEnd);
 
     void dimondSquareGeneration();
-    void dimondSquareGenerationSquare(int x1, int y1, int x2, int y2, std::queue<Point> &pointsForDimond);
+    void dimondSquareGenerationSquare(int x1, int y1, int x2, int y2);
     void dimondSquareGenerationDimond(int x, int y, int side);
-    //----------//
-    void dimondSquareDivide(int x1, int y1, int x2, int y2);
-    //----------//
+
     int randomInt(int min, int max);
 
     class Elevation{
