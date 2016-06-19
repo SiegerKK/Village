@@ -120,7 +120,7 @@ void Map::createTemperatureMap() {
     int latitudeSize = (int)((size / latitudesAmount) + 0.5);
     for (int i = 0; i < size / 2; ++i) {
         for (int j = 0; j < size; ++j) {
-            temperature[i][j] = ((i / latitudeSize) - (latitudesAmount - 1) / 4) - (height[i][j] / 2);
+            temperature[i][j] = ((i / latitudeSize) - (latitudesAmount - 1) / 4) - (height[i][j] / 3);
             //----------//
             //It must not depends on height, but watter(ocean, seas, rivers)
             /*if(height[i][j] == 0){
@@ -134,7 +134,7 @@ void Map::createTemperatureMap() {
     }
     for (int i = size / 2; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            temperature[i][j] = ((latitudesAmount - 1) / 4) - ((i - size / 2) / latitudeSize) - (height[i][j] / 2);
+            temperature[i][j] = ((latitudesAmount - 1) / 4) - ((i - size / 2) / latitudeSize) - (height[i][j] / 3);
             //----------//
             //It must not depends on height, but watter(ocean, seas, rivers)
             /*if(height[i][j] == 0){
@@ -381,11 +381,11 @@ void Map::dimondSquareGenerationSquare(int x1, int y1, int x2, int y2, std::queu
     int xNew = (x1 + x2) / 2;
     int yNew = (y1 + y2) / 2;
     int dist = x2 - x1;
-    height[yNew][xNew] = (height[y1][x1] + height[y1][x2] + height[y2][x1] + height[y2][x2]) / 4 + randomInt(-relief * dist, relief * dist) + 1;
+    height[yNew][xNew] = (height[y1][x1] + height[y1][x2] + height[y2][x1] + height[y2][x2]) / 4 + randomInt(-relief * dist, relief * dist);
     //std::clog << "LOG: height[][] = " << height[yNew][xNew] << "\n";
 
-    if(height[yNew][xNew] < -10)
-        height[yNew][xNew] = -10;
+    if(height[yNew][xNew] < -30)
+        height[yNew][xNew] = -30;
     if(height[yNew][xNew] > 20)
         height[yNew][xNew] = 20;
 
@@ -414,11 +414,11 @@ void Map::dimondSquareGenerationDimond(int x, int y, int side) {
     if((x + side < size))
         height[y][x] += height[y][x + side];
 
-    height[y][x] = height[y][x] / 4 + randomInt(-relief * side, relief * side) + 1;
+    height[y][x] = height[y][x] / 4 + randomInt(-relief * side, relief * side);
     //height[y][x] = 1;
 
-    if(height[y][x] < -10)
-        height[y][x] = -10;
+    if(height[y][x] < -30)
+        height[y][x] = -30;
     if(height[y][x] > 20)
         height[y][x] = 20;
 
@@ -486,7 +486,7 @@ void Map::writeTemperatureToPPM(std::string fileName) {
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             //----------//
-            if(height[i][j] == 0)
+            if(height[i][j] <= 0)
                 file << 0  << " " << 0 << " " << 0 << " ";
             else
             //----------//

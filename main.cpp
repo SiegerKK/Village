@@ -9,7 +9,7 @@ int main() {
     srand(time(NULL));
     //srand(1);
 
-    Map *map = new Map(1024 + 1, 41, 0.05);
+    Map *map = new Map(1024 + 1, 41, 0.3);
     map->init();
 
     //----------//
