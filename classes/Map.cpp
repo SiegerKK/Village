@@ -16,7 +16,7 @@ Map::Map(int size, int scale, double relief) {
 
     this->size = size;
     this->scale = scale;
-    //latitudesAmount= 21;
+    //latitudesAmount = 21;
     this->relief = relief;
 
     height = new int*[size];
@@ -54,6 +54,13 @@ Map::Map(int size, int scale, double relief) {
             humidity[i][j] = 0;
         }
     }
+    bioms = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        bioms[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            bioms[i][j] = 0;
+        }
+    }
 
     std::cout << "Map: Creating time " << time(0) - seconds << "s\n";
 }
@@ -82,6 +89,11 @@ Map::~Map() {
         delete[] humidity[i];
     }
     delete humidity;
+
+    for (int i = 0; i < size; ++i) {
+        delete[] bioms[i];
+    }
+    delete bioms;
 }
 //----------//----------//----------//
 void Map::init() {
@@ -92,6 +104,8 @@ void Map::init() {
     std::cout << "Map: Temperature map created\n";
     createHumidityMap();
     std::cout << "Map: Humidity map created\n";
+    createBiomsMap();
+    std::cout << "Map: Bioms map created\n";
     //----------//
     //some another code
     //----------//
@@ -104,14 +118,6 @@ void Map::init() {
 }
 void Map::createHeightMap() {
     //----------//
-    /*Elevation *elevation;
-    for (int i = 0; i < (rand() % 10) + 10; ++i) {
-        elevation = new Elevation((rand() % 100) + 50, rand() % 5 + 5);
-        elevation->init(this, true);
-        elevation->build(this);
-        delete elevation;
-    }*/
-    //----------//
     dimondSquareGeneration();
     //----------//
 
@@ -122,15 +128,24 @@ void Map::createTemperatureMap() {
     for (int i = 0; i < size / 2; ++i) {
         for (int j = 0; j < size; ++j) {
             temperature[i][j] = ((i / latitudeSize) - (latitudesAmount - 1) / 4) - (height[i][j] / 3);
+            if(temperature[i][j] > 5)
+                temperature[i][j] = 5;
+            else if(temperature[i][j] < -5)
+                temperature[i][j] = -5;
         }
     }
     for (int i = size / 2; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             temperature[i][j] = ((latitudesAmount - 1) / 4) - ((i - size / 2) / latitudeSize) - (height[i][j] / 3);
+            if(temperature[i][j] > 5)
+                temperature[i][j] = 5;
+            else if(temperature[i][j] < -5)
+                temperature[i][j] = -5;
         }
     }
+
 }
-void Map::createHumidityMap(){
+void Map::createHumidityMap() {
     for (int i = 0; i < size; ++i) {
         //----------//
         int currentHumidity;
@@ -155,7 +170,7 @@ void Map::createHumidityMap(){
                 humidity[i][j] = ((currentHumidity + humidity[i - 1][j]) / 2) + (rand() % 3 - 1);
             else
                 humidity[i][j] = currentHumidity + (rand() % 3 - 1);*/
-            humidity[i][j] = currentHumidity + (rand() % 3 - 1);
+            humidity[i][j] = currentHumidity/* + (rand() % 3 - 1)*/;
             //----------//
             /*if(height[i][j] > 0) {
                 humidity[i][j] -= height[i][j] / 4;
@@ -167,6 +182,39 @@ void Map::createHumidityMap(){
                 humidity[i][j] = 10;
             else if(humidity[i][j] < 0)
                 humidity[i][j] = 0;
+        }
+    }
+}
+void Map::createBiomsMap() {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            if((temperature[i][j] <= -4) && (temperature[i][j] >= -5) && (humidity[i][j] >= 0) && (humidity[i][j] <= 10)){
+                //biom - tundra
+                bioms[i][j] = 8;
+            } else if((temperature[i][j] <= -2) && (temperature[i][j] >= -3) && (humidity[i][j] <= 10) && (humidity[i][j] >= 3)){
+                //biom - taiga
+                bioms[i][j] = 7;
+            } else if((temperature[i][j] <= 1) && (temperature[i][j] >= -3) && (humidity[i][j] <= 2) && (humidity[i][j] >= 0)){
+                //biom - plain
+                bioms[i][j] = 3;
+            } else if((temperature[i][j] <= 2) && (temperature[i][j] >= -1) && (humidity[i][j] <= 6) && (humidity[i][j] >= 3)){
+                //biom - forrest
+                bioms[i][j] = 1;
+            } else if((temperature[i][j] <= 2) && (temperature[i][j] >= -1) && (humidity[i][j] <= 10) && (humidity[i][j] >= 7)){
+                //biom - swamp
+                bioms[i][j] = 2;
+            } else if((temperature[i][j] <= 5) && (temperature[i][j] >= 2) && (humidity[i][j] <= 2) && (humidity[i][j] >= 0)){
+                //biom - desert
+                bioms[i][j] = 6;
+            } else if((temperature[i][j] <= 5) && (temperature[i][j] >= 3) && (humidity[i][j] <= 6) && (humidity[i][j] >= 3)){
+                //biom - savanna
+                bioms[i][j] = 5;
+            } else if((temperature[i][j] <= 5) && (temperature[i][j] >= 3) && (humidity[i][j] <= 10) && (humidity[i][j] >= 7)){
+                //biom - jungle
+                bioms[i][j] = 4;
+            } else {
+                bioms[i][j] = -1;
+            }
         }
     }
 }
@@ -480,8 +528,10 @@ void Map::writeTemperatureToPPM(std::string fileName) {
                 file << 0 << " " << 15 << " " << 0 << " ";
             else if(temperature[i][j] >= -3)
                 file << 0 << " " << 0 << " " << 15 << " ";
-            else
+            else if(temperature[i][j] >= -5)
                 file << 0 << " " << 15 << " " << 15 << " ";
+            else
+                file << 20 << " " << 20 << " " << 20 << " ";
         }
         file << "\n";
     }
@@ -535,6 +585,64 @@ void Map::writeHumidityToPPM(std::string fileName) {
                     file << 18 << " " << 0 << " " << 2 << " ";
                     break;
                 case 0:
+                    file << 20 << " " << 0 << " " << 0 << " ";
+                    break;
+            }
+        }
+        file << "\n";
+    }
+
+    std::cout << "Map: File " << fileName << " was written\n";
+    file.close();
+}
+void Map::writeBiomsToPPM(std::string fileName) {
+    std::ofstream file;
+    file.open(fileName.c_str());
+
+    file << "P3\n";
+    file << size << " " << size << "\n";
+    file << 20 << "\n";
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            //----------//
+            if(height[i][j] <= 0){
+                file << 0 << " " << 0 << " " << 15 << " ";
+            } else
+            //----------//
+            switch (bioms[i][j]){
+                case 1:
+                    //forrest
+                    file << 0 << " " << 12 << " " << 0 << " ";
+                    break;
+                case 2:
+                    //swamp
+                    file << 0 << " " << 10 << " " << 10 << " ";
+                    break;
+                case 3:
+                    //plain
+                    file << 5 << " " << 15 << " " << 0 << " ";
+                    break;
+                case 4:
+                    //jungle
+                    file << 0 << " " << 5 << " " << 0 << " ";
+                    break;
+                case 5:
+                    //savanna
+                    file << 10 << " " << 15 << " " << 0 << " ";
+                    break;
+                case 6:
+                    //desert
+                    file << 15 << " " << 15 << " " << 0 << " ";
+                    break;
+                case 7:
+                    //taiga
+                    file << 5 << " " << 10 << " " << 5 << " ";
+                    break;
+                case 8:
+                    //tundra
+                    file << 15 << " " << 15 << " " << 15 << " ";
+                    break;
+                default:
                     file << 20 << " " << 0 << " " << 0 << " ";
                     break;
             }

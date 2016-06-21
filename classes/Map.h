@@ -22,6 +22,7 @@ public:
     void createHeightMap();
     void createTemperatureMap();
     void createHumidityMap();
+    void createBiomsMap();
 
     void makeHeightScale();
     void makeHeightScale10();
@@ -35,6 +36,7 @@ public:
     void writeHeightToPPM(std::string fileName);
     void writeTemperatureToPPM(std::string fileName);
     void writeHumidityToPPM(std::string fileName);
+    void writeBiomsToPPM(std::string filename);
 protected:
     //int size - size of map(width and height)
     int size;
@@ -54,6 +56,12 @@ protected:
     int **temperature;
     //int humidity[][] - array with humidity all of tiles(влажность)(0..10)
     int **humidity;
+    /**
+     *  int bioms[][] - array of bioms
+     *
+     *  value -> 1-forrest | 2-swamp | 3-plain | 4-jungle | 5-savanna | 6-desert | 7-taiga | 8-tundra
+     */
+    int **bioms;
     //int latitudesAmount - amount of latitudes
     const int latitudesAmount = 22;
 
