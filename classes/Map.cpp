@@ -99,6 +99,7 @@ void Map::init() {
     std::cout << "Map: map scaling 10 created\n";*/
     makeHeightScale();
     std::cout << "Map: map user's scaling created\n";
+
     std::cout << "Map: Initializing time " << time(0) - seconds << "s\n";
 }
 void Map::createHeightMap() {
@@ -131,10 +132,41 @@ void Map::createTemperatureMap() {
 }
 void Map::createHumidityMap(){
     for (int i = 0; i < size; ++i) {
+        //----------//
+        int currentHumidity;
+        std::string climateZone = getClimateZone(i);
+        if(climateZone == "arctic"){
+            currentHumidity = 1;
+        } else if(climateZone == "subarctic"){
+            currentHumidity = 2;
+        } else if(climateZone == "temperate"){
+            currentHumidity = 5;
+        } else if(climateZone == "tropic"){
+            currentHumidity = 2;
+        } else if(climateZone == "equatorial"){
+            currentHumidity = 9;
+        } else {
+            currentHumidity = 0;
+        }
+        //----------//
         for (int j = 0; j < size; ++j) {
             //----------//
-
+            /*if(i != 0)
+                humidity[i][j] = ((currentHumidity + humidity[i - 1][j]) / 2) + (rand() % 3 - 1);
+            else
+                humidity[i][j] = currentHumidity + (rand() % 3 - 1);*/
+            humidity[i][j] = currentHumidity + (rand() % 3 - 1);
             //----------//
+            /*if(height[i][j] > 0) {
+                humidity[i][j] -= height[i][j] / 4;
+                humidity[i][j] += temperature[i][j] / 2;
+            }*/
+            //----------//
+
+            if(humidity[i][j] > 10)
+                humidity[i][j] = 10;
+            else if(humidity[i][j] < 0)
+                humidity[i][j] = 0;
         }
     }
 }
@@ -258,7 +290,7 @@ void Map::dimondSquareGeneration() {
     height[size - 1][0] = 0;
     height[size - 1][size - 1] = 0;
 
-    int side = size - 1;
+    int side = size;
     while(side >= 2){
         for (int i = 0; i < size / side - 1; i++) {
             for (int j = 0; j < size / side - 1; j++) {
@@ -322,6 +354,60 @@ void Map::dimondSquareGenerationDimond(int x, int y, int side) {
 int Map::randomInt(int min, int max) {
     int result = rand() % (max - min + 1) + min;
 }
+std::string Map::getClimateZone(int y) {
+    if((y < 0) || (y >= size)) {
+        std::cerr << "ERROR: getClimateZone(int x):\n";
+        std::cerr << "--> x is not in bounds of map\n";
+
+        return "";
+    }
+    int currentLatitude = y / ((double)size / latitudesAmount);
+    switch (currentLatitude){
+        case 0:
+        case 1:
+            return "arctic";
+            break;
+        case 2:
+        case 3:
+            return "subarctic";
+            break;
+        case 4:
+        case 5:
+        case 6:
+            return "temperate";
+            break;
+        case 7:
+        case 8:
+            return "tropic";
+            break;
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+            return "equatorial";
+            break;
+        case 13:
+        case 14:
+            return "tropic";
+            break;
+        case 15:
+        case 16:
+        case 17:
+            return "temperate";
+            break;
+        case 18:
+        case 19:
+            return "subarctic";
+            break;
+        case 20:
+        case 21:
+            return "arctic";
+            break;
+        default:
+            return "";
+            break;
+    }
+}
 //----------//----------//----------//
 void Map::writeHeightToPGM(std::string fileName){
     std::ofstream file;
@@ -355,9 +441,9 @@ void Map::writeHeightToPPM(std::string fileName){
     file << 20 << "\n";
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            if(height[i][j] > 10)
+            if(height[i][j] > 15)
                 file << 5  << " " << 5 << " " << 5 << " ";
-            else if(height[i][j] > 7)
+            else if(height[i][j] > 10)
                 file << 10  << " " << 10 << " " << 10 << " ";
             else if(height[i][j] > 0)
                 file << 20 << " " << 20 << " " << 20 << " ";
@@ -412,7 +498,11 @@ void Map::writeHumidityToPPM(std::string fileName) {
     file << 20 << "\n";
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            //std::cout << humidity[i][j] << "\n";
+            //----------//
+            if(height[i][j] <= 0){
+                file << 0 << " " << 0 << " " << 0 << " ";
+            } else
+            //----------//
             switch (humidity[i][j]){
                 case 10:
                     file << 0 << " " << 0 << " " << 20 << " ";

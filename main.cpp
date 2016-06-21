@@ -7,9 +7,9 @@ using namespace std;
 
 int main() {
     //srand(time(NULL));
-    srand(1);
+    srand(11);
 
-    Map *map = new Map(1024 + 1, 41, 0.2);
+    Map *map = new Map(1024 + 1, 41, 0.1);
     map->init();
 
     //----------//
@@ -21,7 +21,7 @@ int main() {
     map->writeHeightToPGM("testHeight.pgm");
     map->writeHeightToPPM("testHeight.ppm");
     map->writeTemperatureToPPM("testTemperature.ppm");
-    //map->writeHumidityToPPM("testHumidity.ppm");
+    map->writeHumidityToPPM("testHumidity.ppm");
     delete map;
 
     return 0;

@@ -50,9 +50,9 @@ protected:
     int **heightScale;
     //int heightScale10[][] - scaled height[][] with scaling 10
     int **heightScale10;
-    //int tmperature[][] - array with temperatures all of tiles
+    //int tmperature[][] - array with temperatures all of tiles(-5..5)
     int **temperature;
-    //int humidity[][] - array with humidity all of tiles(влажность)
+    //int humidity[][] - array with humidity all of tiles(влажность)(0..10)
     int **humidity;
     //int latitudesAmount - amount of latitudes
     const int latitudesAmount = 22;
@@ -65,6 +65,8 @@ private:
     void dimondSquareGenerationDimond(int x, int y, int side);
 
     int randomInt(int min, int max);
+
+    std::string getClimateZone(int y);
 
     class Elevation{
     public:
