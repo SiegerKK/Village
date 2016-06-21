@@ -73,12 +73,12 @@ Map::~Map() {
     }
     delete heightScale;
 
-    for (int i = 0; i < size / scale; ++i) {
+    for (int i = 0; i < size; ++i) {
         delete[] temperature[i];
     }
     delete temperature;
 
-    for (int i = 0; i < size / scale; ++i) {
+    for (int i = 0; i < size; ++i) {
         delete[] humidity[i];
     }
     delete humidity;
@@ -499,9 +499,9 @@ void Map::writeHumidityToPPM(std::string fileName) {
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             //----------//
-            if(height[i][j] <= 0){
+            /*if(height[i][j] <= 0){
                 file << 0 << " " << 0 << " " << 0 << " ";
-            } else
+            } else*/
             //----------//
             switch (humidity[i][j]){
                 case 10:
